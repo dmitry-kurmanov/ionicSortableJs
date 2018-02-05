@@ -1,13 +1,13 @@
-import { Component } from '@angular/core';
-import { NavController } from 'ionic-angular';
+import { Component } from "@angular/core";
+import { NavController } from "ionic-angular";
 import * as Survey from "survey-angular";
-import * as _ from 'lodash';
+import * as _ from "lodash";
 declare var noUiSlider: any;
 declare var $: any;
 declare var Sortable: any;
 @Component({
-  selector: 'page-home',
-  templateUrl: 'home.html'
+  selector: "page-home",
+  templateUrl: "home.html"
 })
 export class HomePage {
   sliderWidget: any;
@@ -15,11 +15,9 @@ export class HomePage {
   questionnaire: any;
   questions: any;
   datepicker: any;
-  iwidget: any; 
+  iwidget: any;
   pwidget: any;
-  constructor(public navCtrl: NavController) {
-    
-  }
+  constructor(public navCtrl: NavController) {}
   ionViewDidEnter() {
     var questions = {
       questions: [
@@ -36,42 +34,49 @@ export class HomePage {
           title: "Life Priorities ",
           isRequired: true,
           choices: ["family", "work", "pets", "travels", "games"]
-      },
+        },
         {
           type: "matrix",
           name: "Quality",
-          title: "Please indicate if you agree or disagree with the following statements",
+          title:
+            "Please indicate if you agree or disagree with the following statements",
           columns: [
-              {
-                value: 1,
-                text: "Strongly Disagree"
-              }, {
-                value: 2,
-                text: "Disagree"
-              }, {
-                value: 3,
-                text: "Neutral"
-              }, {
-                value: 4,
-                text: "Agree"
-              }
+            {
+              value: 1,
+              text: "Strongly Disagree"
+            },
+            {
+              value: 2,
+              text: "Disagree"
+            },
+            {
+              value: 3,
+              text: "Neutral"
+            },
+            {
+              value: 4,
+              text: "Agree"
+            }
           ],
           rows: [
-              {
-                value: "affordable",
-                text: "Product is affordable"
-              }, {
-                value: "does what it claims",
-                text: "Product does what it claims"
-              }, {
-                value: "better then others",
-                text: "Product is better than other products on the market"
-              }, {
-                value: "easy to use",
-                text: "Product is easy to use"
-              }
+            {
+              value: "affordable",
+              text: "Product is affordable"
+            },
+            {
+              value: "does what it claims",
+              text: "Product does what it claims"
+            },
+            {
+              value: "better then others",
+              text: "Product is better than other products on the market"
+            },
+            {
+              value: "easy to use",
+              text: "Product is easy to use"
+            }
           ]
-      },
+        },
         {
           inputType: "date",
           isRequired: false,
@@ -87,7 +92,6 @@ export class HomePage {
           isRequired: false,
           renderAs: "nouislider"
         }
-        
       ],
       answeredOptions: {},
       questionnaireId: 5,
@@ -98,10 +102,15 @@ export class HomePage {
     };
     this.questionnaire = questions;
     this.questions = { questions: this.questionnaire["questions"] };
-    
-    this.surveyModel = new Survey.ReactSurveyModel(this.questions);
+
+    this.createPriority();
+    Survey.CustomWidgetCollection.Instance.addCustomWidget(
+      this.pwidget,
+      "customtype"
+    );
+
     this.createSlider();
-    
+
     Survey.CustomWidgetCollection.Instance.addCustomWidget(this.sliderWidget);
     Survey.JsonObject.metaData.addProperty("datepicker", {
       name: "dateFormat",
@@ -115,7 +124,7 @@ export class HomePage {
         "'day' d 'of' MM 'in the year' yy"
       ]
     });
-    
+
     Survey.Survey.cssType = "bootstrap";
     Survey.defaultBootstrapCss.navigationButton = "btn btn-primary";
     Survey.defaultBootstrapCss.navigation.complete = "complete-btn";
@@ -123,37 +132,37 @@ export class HomePage {
     Survey.defaultBootstrapCss.multipletext.root = "multipletext";
     Survey.defaultBootstrapCss.saveData.error =
       "error-msg-box font-weight-mid header-padding-tiny";
-    this.surveyModel.questionErrorLocation = "top";
+
     this.createDatePicker();
     this.createiCheck();
     Survey.CustomWidgetCollection.Instance.addCustomWidget(this.iwidget);
-    this.createPriority();
-    Survey.CustomWidgetCollection.Instance.addCustomWidget(this.pwidget);
-    this.surveyModel.onAfterRenderSurvey.add(function (sender, options) {
+    this.surveyModel = new Survey.ReactSurveyModel(this.questions);
+    this.surveyModel.questionErrorLocation = "top";
+    this.surveyModel.onAfterRenderSurvey.add(function(sender, options) {
       let trcount;
-      const $inputstr = $('table tbody tr');
-      _.each($inputstr, function (el) {
+      const $inputstr = $("table tbody tr");
+      _.each($inputstr, function(el) {
         trcount = trcount || 1;
-        const tdel = $(el).find('td:not(:first) label input');
+        const tdel = $(el).find("td:not(:first) label input");
         let icount;
-        _.each(tdel, function (el) {
+        _.each(tdel, function(el) {
           icount = icount || 1;
 
-          $(el).attr('id', 'mtr' + trcount + icount);
+          $(el).attr("id", "mtr" + trcount + icount);
           icount++;
-        })
-        trcount ++;
-      })
+        });
+        trcount++;
+      });
 
-      const $inputs = $('table tbody tr td:not(:first) label input');
-      $('table tbody tr td:first').addClass('captionText')
+      const $inputs = $("table tbody tr td:not(:first) label input");
+      $("table tbody tr td:first").addClass("captionText");
       let id;
-      _.each($inputs, function (el) {
+      _.each($inputs, function(el) {
         id = id || 0;
         id++;
         const $val = $(el).val();
         const html = '<span class="matrix-vert"></span>';
-         $(el).after(html);
+        $(el).after(html);
       });
     });
     Survey.CustomWidgetCollection.Instance.addCustomWidget(this.datepicker);
@@ -161,22 +170,39 @@ export class HomePage {
       Survey.SurveyNG.render("surveyElement", {
         model: this.surveyModel
       });
-    }    
+    }
   }
 
   createPriority() {
-    
     this.pwidget = {
       name: "sortablelist",
       title: "Sortable list",
+      iconName: "icon-sortablelist",
       widgetIsLoaded: function() {
-        return typeof  Sortable != "undefined";
+        return typeof Sortable != "undefined";
       },
+      defaultJSON: { choices: ["Item 1", "Item 2", "Item 3"] },
+      areaStyle: "border: 1px solid #1ab394; width:100%; min-height:50px",
+      itemStyle: "background-color:#1ab394;color:#fff;margin:5px;padding:10px;",
       isFit: function(question) {
-        console.log('in fit', typeof  Sortable != "undefined")
         return question.getType() === "sortablelist";
       },
       htmlTemplate: "<div></div>",
+      activatedByChanged: function(activatedBy) {
+        Survey.JsonObject.metaData.addClass(
+          "sortablelist",
+          [
+            { name: "hasOther", visible: false },
+            { name: "storeOthersAsComment", visible: false }
+          ],
+          null,
+          "checkbox"
+        );
+        Survey.JsonObject.metaData.addProperty("sortablelist", {
+          name: "emptyText",
+          default: "Move items here."
+        });
+      },
       afterRender: function(question, el) {
         var rootWidget = this;
         el.style.width = "100%";
@@ -231,9 +257,9 @@ export class HomePage {
             } else {
               emptyEl.style.display = "none";
               for (var i = 0; i < resultEl.children.length; i++) {
-                if (typeof resultEl.children[i]['dataset'].value === "undefined")
+                if (typeof resultEl.children[i].dataset.value === "undefined")
                   continue;
-                result.push(resultEl.children[i]['dataset'].value);
+                result.push(resultEl.children[i].dataset.value);
               }
             }
             isUpdatingQuestionValue = true;
@@ -252,7 +278,7 @@ export class HomePage {
         question.resultEl.destroy();
         question.sourceEl.destroy();
       }
-    }
+    };
   }
 
   sendDataToServer(survey) {
@@ -298,79 +324,94 @@ export class HomePage {
 
   createDatePicker() {
     this.datepicker = {
-      name: 'datepicker',
-      htmlTemplate: '<input class="widget-datepicker form-control" type="text" style="width: 12%;">',
-      isFit: function (question) {
-        return question.inputType === 'date';
+      name: "datepicker",
+      htmlTemplate:
+        '<input class="widget-datepicker form-control" type="text" style="width: 12%;">',
+      isFit: function(question) {
+        return question.inputType === "date";
       },
-      afterRender: function (question, el) {
-        const $el = $('.widget-datepicker');
-        
+      afterRender: function(question, el) {
+        const $el = $(".widget-datepicker");
+
         const widget = $el.datepicker({
           changeMonth: true,
           changeYear: true,
           showButtonPanel: true,
           dateFormat: "m/d/yy"
         });
-        
-        question.valueChangedCallback = function () {
-          $('#' + question.name).val(question.value);
+
+        question.valueChangedCallback = function() {
+          $("#" + question.name).val(question.value);
         };
 
         question.valueChangedCallback();
       },
-      willUnmount: function (question, el) {
-        $(el).find('.widget-datepicker').datepicker('destroy');
+      willUnmount: function(question, el) {
+        $(el)
+          .find(".widget-datepicker")
+          .datepicker("destroy");
       }
     };
   }
-  createiCheck(){
+  createiCheck() {
     this.iwidget = {
       name: "icheck",
       isDefaultRender: true,
       htmlTemplate: '<div id="ichk-matrix"></div>',
-      isFit : function(question) { return question.getType() === 'matrix'; },
+      isFit: function(question) {
+        return question.getType() === "matrix";
+      },
       afterRender: function(question, el) {
-        const $el = $('#ichk-matrix');
-        $el.find('.table').addClass('ichk-matrix');
-          $(el).find('input').iCheck({
-            checkboxClass: 'icheckbox_futurico',
-            radioClass: 'icheckbox_futurico',
-            increaseArea: '20%' // optional
+        const $el = $("#ichk-matrix");
+        $el.find(".table").addClass("ichk-matrix");
+        $(el)
+          .find("input")
+          .iCheck({
+            checkboxClass: "icheckbox_futurico",
+            radioClass: "icheckbox_futurico",
+            increaseArea: "20%" // optional
           });
-          
-          $(el).find('input').on('ifChecked', function(event) {
+
+        $(el)
+          .find("input")
+          .on("ifChecked", function(event) {
             question.generatedVisibleRows.forEach(function(row, index, rows) {
               if (row.fullName === event.target.name) {
-                row.value = event.target.value
+                row.value = event.target.value;
               }
             });
           });
-          
-          var select = function() {
-            question.generatedVisibleRows.forEach(function(row, index, rows) {
-              if (row.value) {
-                $(el).find("input[name='" + row.fullName  + "'][value=" + row.value + "]").iCheck('check');
-                 const elem = $(el).find("input[name='" + row.fullName  + "'][value=" + row.value + "]");
-                  const id = $(elem)[0].id;
-                  const rowToEdit = $('#' + id).closest('tr');
-                  const selectedOption = id.substr(id.length - 1);
-                  const editedTd = $(rowToEdit).find('td:not(:first) label');
-                  _.each(editedTd, function (el, index) {
-                    if(index < parseInt(selectedOption)){
-                      $(el).removeClass('highlightPrevious');
-                      $(el).addClass('highlightPrevious');
-                    } else {
-                      $(el).removeClass('highlightPrevious');
-                    }
-                  });
-              }
-            });
-          }
-          
-          question.valueChangedCallback = select;
-          select();
+
+        var select = function() {
+          question.generatedVisibleRows.forEach(function(row, index, rows) {
+            if (row.value) {
+              $(el)
+                .find(
+                  "input[name='" + row.fullName + "'][value=" + row.value + "]"
+                )
+                .iCheck("check");
+              const elem = $(el).find(
+                "input[name='" + row.fullName + "'][value=" + row.value + "]"
+              );
+              const id = $(elem)[0].id;
+              const rowToEdit = $("#" + id).closest("tr");
+              const selectedOption = id.substr(id.length - 1);
+              const editedTd = $(rowToEdit).find("td:not(:first) label");
+              _.each(editedTd, function(el, index) {
+                if (index < parseInt(selectedOption)) {
+                  $(el).removeClass("highlightPrevious");
+                  $(el).addClass("highlightPrevious");
+                } else {
+                  $(el).removeClass("highlightPrevious");
+                }
+              });
+            }
+          });
+        };
+
+        question.valueChangedCallback = select;
+        select();
       }
+    };
   }
-}
 }
