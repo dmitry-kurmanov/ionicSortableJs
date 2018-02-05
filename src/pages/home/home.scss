@@ -1,0 +1,29 @@
+page-home {
+    .matrix-vert{
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        border: 1px solid lightgray;
+        background: lightgray;
+        position: absolute;
+        right: 0;
+
+    }
+
+    .highlightPrevious{
+        .matrix-vert{
+            background: red;
+        }
+    }
+
+    th > span{
+        visibility: hidden;
+        width: 10px;
+        overflow: hidden;
+        position: relative;
+        
+    }
+    th{
+        width: 1%;
+    }
+}
